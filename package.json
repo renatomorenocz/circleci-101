@@ -1,0 +1,19 @@
+{
+  "name": "circleci-101",
+  "version": "0.0.1",
+  "description": "Circle CI test",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/renatomorenocz/circleci-101.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/renatomorenocz/circleci-101/issues"
+  },
+  "homepage": "https://github.com/renatomorenocz/circleci-101#readme"
+}
