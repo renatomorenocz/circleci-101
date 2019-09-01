@@ -19,8 +19,11 @@
   "homepage": "https://github.com/renatomorenocz/circleci-101#readme",
   "dependencies": {
     "@types/express": "^4.17.1",
+    "@types/jest": "^24.0.18",
     "express": "^4.17.1",
+    "jest": "^24.9.0",
     "nodemon": "^1.19.1",
+    "ts-jest": "^24.0.2",
     "ts-node": "^8.3.0",
     "typescript": "^3.6.2"
   },
