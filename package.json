@@ -6,7 +6,8 @@
   "scripts": {
     "test": "jest --no-cache",
     "dev": "nodemon --watch src/ --exec \"ts-node src/index.ts\" -e ts",
-    "build": "tsc"
+    "build": "tsc",
+    "prod": "yarn build && node dist/entry.js"
   },
   "jest": {
     "transform": {
