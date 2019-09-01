@@ -5,4 +5,8 @@ server.get('/', (_, res) => {
   res.send('Hello ts-node circle ci test!');
 });
 
+server.get('/teste', (_, res) => {
+  res.send('Hello ts-node circle ci test!');
+});
+
 export default server;
