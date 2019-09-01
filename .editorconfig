@@ -22,3 +22,4 @@ continuation_indent_size = 8
 [*.md]
 trim_trailing_whitespace = false
 
+

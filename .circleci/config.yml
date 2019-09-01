@@ -1,61 +1,89 @@
+version: 2.1
+executors:
+  docker-publisher:
+    environment:
+      IMAGE_NAME: renatomorenovz/circleci-101
+    docker:
+      - image: circleci/buildpack-deps:stretch
+  node:
+    docker:
+      - image: 'circleci/node:10'
+
 jobs:
   build:
-    docker:
-      - image: circleci/node:10
+    executor: node
     steps:
       - checkout
       - restore_cache:
-          name: Restore Package Cache
-          key: dependencies-cache-{{ checksum "yarn.lock" }}
+          name: 'Restore Package Cache'
+          key: 'dependencies-cache-{{ checksum "yarn.lock" }}'
       - run:
-          name: Install Dependencies
+          name: 'Install Dependencies'
           command: yarn
       - save_cache:
-          name: Save Package Cache
-          key: dependencies-cache-{{ checksum "yarn.lock" }}
+          name: 'Save Package Cache'
+          key: 'dependencies-cache-{{ checksum "yarn.lock" }}'
           paths:
             - node_modules/
       - run:
           name: Build
-          command: yarn build
+          command: 'yarn build'
+
   lint:
-    docker:
-      - image: circleci/node:10
+    executor: node
     steps:
       - checkout
       - restore_cache:
-          name: Restore Package Cache
-          key: dependencies-cache-{{ checksum "yarn.lock" }}
+          name: 'Restore Package Cache'
+          key: 'dependencies-cache-{{ checksum "yarn.lock" }}'
       - run:
           name: Lint
-          command: yarn lint
-
+          command: 'yarn lint'
   test:
-    docker:
-      - image: circleci/node:10
+    executor: node
     steps:
       - checkout
       - restore_cache:
-          name: Restore Package Cache
-          key: dependencies-cache-{{ checksum "yarn.lock" }}
+          name: 'Restore Package Cache'
+          key: 'dependencies-cache-{{ checksum "yarn.lock" }}'
       - run:
           name: Test
-          command: yarn test
-  build_docker_image:
-    environment:
-      IMAGE_NAME: renatomorenocz/circleci-101
-    docker:
-      - image: circleci/buildpack-deps:stretch
+          command: 'yarn test'
+
+  build-docker-image:
+    executor: docker-publisher
     steps:
       - checkout
       - setup_remote_docker
       - run:
-          name: Build Docker image
-          command: docker build -t $IMAGE_NAME:latest .
+          name: 'Build Docker image'
+          command: 'docker build -t $IMAGE_NAME:latest .'
+      - run:
+          name: 'Archive Docker image'
+          command: 'docker save -o image.tar $IMAGE_NAME'
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ./image.tar
+
+  publish-latest:
+    executor: docker-publisher
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      - setup_remote_docker
+      - run:
+          name: 'Load archived Docker image'
+          command: 'docker load -i /tmp/workspace/image.tar'
+      - run:
+          name: 'Publish Docker Image to Docker Hub'
+          command: |
+            echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+            docker push $IMAGE_NAME:latest
 
 workflows:
   version: 2
-  default:
+  build:
     jobs:
       - build
       - lint:
@@ -64,7 +92,10 @@ workflows:
       - test:
           requires:
             - build
-      - build_docker_image:
+      - build-docker-image:
           requires:
             - lint
             - test
+      - publish-latest:
+          requires:
+            - build-docker-image
