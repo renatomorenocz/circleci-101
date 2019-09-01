@@ -6,4 +6,3 @@ jobs:
     steps:
       - checkout
       - run: node -v
-      - run: node index.js
