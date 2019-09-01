@@ -99,6 +99,12 @@ workflows:
           requires:
             - lint
             - test
+          filters:
+            branches:
+              only:
+                - master
+                - dev
+                - qa
       - publish-latest:
           requires:
             - build-docker-image
