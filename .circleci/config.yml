@@ -1,4 +1,6 @@
 version: 2.1
+orbs:
+  azure-cli: circleci/azure-cli@1.1.0
 executors:
   docker-publisher:
     environment:
@@ -84,11 +86,18 @@ jobs:
             IMAGE_TAG="${CIRCLE_BRANCH}-latest"
             docker push $IMAGE_NAME:$IMAGE_TAG
 
+  deploy-to-azure:
+    executor: docker-publisher
+    steps:
+      - azure-cli/install
+      - azure-cli/login-with-user
+
 workflows:
   version: 2
   build:
     jobs:
       - build
+      - deploy-to-azure
       - lint:
           requires:
             - build
