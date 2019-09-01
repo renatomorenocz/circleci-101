@@ -41,6 +41,17 @@ jobs:
       - run:
           name: Test
           command: yarn test
+  build_docker_image:
+    environment:
+      IMAGE_NAME: renatomorenocz/circleci-101
+    docker:
+      - image: circleci/buildpack-deps:stretch
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Build Docker image
+          command: docker build -t $IMAGE_NAME:latest .
 
 workflows:
   version: 2
@@ -53,3 +64,7 @@ workflows:
       - test:
           requires:
             - build
+      - build_docker_image:
+          requires:
+            - lint
+            - test
