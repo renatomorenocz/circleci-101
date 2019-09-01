@@ -6,14 +6,16 @@ jobs:
     steps:
       - checkout
       - restore_cache:
+          name: Restore Package Cache
           key: dependencies-cache-{{ checksum "yarn.lock" }}
       - run:
           name: Install Dependencies
-          command: yarn install
+          command: yarn
       - save_cache:
+          name: Save Package Cache
           key: dependencies-cache-{{ checksum "yarn.lock" }}
           paths:
-            - /home/circleci/.npm
+            - node_modules/
       - run:
           name: Run Tests
           command: yarn test
